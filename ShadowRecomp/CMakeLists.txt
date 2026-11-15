@@ -107,6 +107,14 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
         "os/linux/process_linux.cpp"
         "os/linux/user_linux.cpp"
     )
+elseif (APPLE)
+    set(SHADOW_RECOMP_OS_CXX_SOURCES
+        "os/macos/logger_macos.cpp"
+        "os/macos/media_macos.cpp"
+        "os/macos/process_macos.cpp"
+        "os/macos/user_macos.cpp"
+        "os/macos/version_macos.cpp"
+    )
 endif()
 
 
@@ -335,6 +343,28 @@ if (WIN32)
             "/lldltocachepolicy:cache_size_bytes=4g:prune_after=72h"
         )
     endif()
+elseif (APPLE)
+    # Create version number for app bundle.
+    CreateVersionString(
+            VERSION_TXT ${VERSION_TXT}
+            OUTPUT_VAR MACOS_BUNDLE_VERSION
+    )
+
+    add_executable(ShadowRecomp MACOSX_BUNDLE
+            ${SHADOW_RECOMP_CXX_SOURCES}
+            res/macos/game_icon.icns
+    )
+    set_source_files_properties(res/macos/game_icon.icns PROPERTIES
+            MACOSX_PACKAGE_LOCATION Resources)
+    set_target_properties(ShadowRecomp PROPERTIES
+            OUTPUT_NAME "Shadow Recompiled"
+            MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/res/macos/MacOSXBundleInfo.plist.in
+            MACOSX_BUNDLE_GUI_IDENTIFIER io.github.foxworkshop.shadowrecomp
+            MACOSX_BUNDLE_BUNDLE_NAME "Shadow Recompiled"
+            MACOSX_BUNDLE_BUNDLE_VERSION ${MACOS_BUNDLE_VERSION}
+            MACOSX_BUNDLE_SHORT_VERSION_STRING ${MACOS_BUNDLE_VERSION}
+            MACOSX_BUNDLE_ICON_FILE "game_icon.icns"
+    )
 else()
     add_executable(ShadowRecomp ${SHADOW_RECOMP_CXX_SOURCES})
 endif()

@@ -832,7 +832,7 @@ static void LogIndividualFilesReplacement()
 {
 	std::vector<std::pair<std::string, std::vector<std::string>>> archives;
 	std::error_code ec;
-	fs::path gameRoot = MainGameFolder;
+	fs::path gameRoot = GetMainGameFolder();
 
 	for (auto it = fs::recursive_directory_iterator(gameRoot, ec); !ec && it != fs::recursive_directory_iterator(); it.increment(ec))
 	{

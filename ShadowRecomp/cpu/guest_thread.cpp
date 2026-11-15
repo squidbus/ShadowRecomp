@@ -10,9 +10,6 @@
 #include <cstring>
 #ifdef _WIN32
 #include <windows.h>
-#include <intrin.h>
-#else
-#include <x86intrin.h>
 #endif
 
 struct KTHREAD_R

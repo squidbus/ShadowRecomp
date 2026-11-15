@@ -13,7 +13,6 @@
       "name": "dbus",
       "platform": "linux"
     },
-    "directx-dxc",
     "freetype",
     "curl",
     "nativefiledialog-extended"

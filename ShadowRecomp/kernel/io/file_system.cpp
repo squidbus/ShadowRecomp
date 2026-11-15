@@ -103,7 +103,7 @@ struct DriveMapping
 static const DriveMapping& GetDriveMapping(const std::string_view& letter)
 {
 	static const std::vector<DriveMapping> table = {
-		{ "d:", MainGameFolder, {}, nullptr },
+		{ "d:", GetMainGameFolder(), {}, nullptr },
 		{ "u:", GetUserPath(), GetSavePath(true), isSaveSegment},
 	};
 
@@ -114,7 +114,7 @@ static const DriveMapping& GetDriveMapping(const std::string_view& letter)
 			return m;
 	}
 
-	static const DriveMapping fallback = { "", MainGameFolder };
+	static const DriveMapping fallback = { "", GetMainGameFolder() };
 	return fallback;
 }
 
@@ -178,7 +178,7 @@ std::filesystem::path FileSystem::ResolvePath(const std::string_view& path, bool
 	}
 	else
 	{
-		result = MainGameFolder;
+		result = GetMainGameFolder();
 		result /= std::string(path);
 	}
 	return result;
