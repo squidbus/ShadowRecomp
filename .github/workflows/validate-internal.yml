@@ -2,7 +2,7 @@ name: validate-internal
 on:
   push:
     branches:
-      - master
+      - macos-buildtest
   pull_request:
     types: [opened, synchronize]
 permissions:
