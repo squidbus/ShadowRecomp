@@ -4,8 +4,7 @@
 
 static const std::string GameExecutableFile = "default.xbe";
 inline std::string GetMainGameFolder() { return (GetGamePath() / "game").string(); }
-const std::string MainGameFolder = GetMainGameFolder();
-static const std::string GameExecutable = MainGameFolder + "/" + GameExecutableFile;
+inline std::string GetGameExecutable() { return GetMainGameFolder() + "/" + GameExecutableFile; }
 
 struct FileSystem
 {

@@ -199,6 +199,8 @@ static RenderVertexBufferView g_vertexBufferViews[16];
 static RenderInputSlot g_inputSlots[16];
 static RenderIndexBufferView g_indexBufferView({}, 0, RenderFormat::R16_UINT);
 
+thread_local PendingRenderCommands g_pendingRenderCommands;
+
 int32_t* g_texture_stage_states = nullptr;
 int32_t g_dirty_texture_stage_states[4 * X_D3DTSS_MAX]; //128 because 4 stages * 32 texture stage state possible
 

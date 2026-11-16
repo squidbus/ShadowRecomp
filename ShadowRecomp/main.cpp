@@ -230,7 +230,7 @@ int main(int argc, char* argv[])
     LOGN("Starting Shadow Recomp");
 
     std::filesystem::path xbePath;
-    xbePath = GameExecutable;
+    xbePath = GetGameExecutable();
 
     bool forceInstaller = false;
     bool useDefaultWorkingDirectory = false;
@@ -303,7 +303,7 @@ int main(int argc, char* argv[])
 
     Config::Load();
 
-    bool isGameInstalled = std::filesystem::exists(GameExecutable);
+    bool isGameInstalled = std::filesystem::exists(GetGameExecutable());
     bool runInstallerWizard = forceInstaller || !isGameInstalled;
 
     if (forceInstallationCheck)
@@ -311,7 +311,7 @@ int main(int argc, char* argv[])
         os::process::ShowConsole();
         int lastDecile = -1;
         std::string errorMessage;
-        bool isInstallValid = Installer::CheckInstall(MainGameFolder, [&](const Installer::Progress& progress)
+        bool isInstallValid = Installer::CheckInstall(GetMainGameFolder(), [&](const Installer::Progress& progress)
         {
             int decile = int(progress.ratio * 10.0f);
             if (decile != lastDecile)
@@ -378,14 +378,14 @@ int main(int argc, char* argv[])
     InitMultiCoreMutexesPatches();
 
 
-    isGameInstalled = std::filesystem::exists(GameExecutable);
+    isGameInstalled = std::filesystem::exists(GetGameExecutable());
     if (!isGameInstalled)
     {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, GameWindow::GetTitle(), "Game files not found. Please reinstall.", GameWindow::s_pWindow);
         std::_Exit(1);
     }
 
-    xbePath = GameExecutable;
+    xbePath = GetGameExecutable();
     uint32_t entry = LoadXbeModule(xbePath);
 
     if (!runInstallerWizard)

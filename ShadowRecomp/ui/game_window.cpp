@@ -282,6 +282,9 @@ void GameWindow::Init(const char* sdlVideoDriver)
 #elif defined(__linux__)
     s_renderWindow = { (Display*)SDL_GetPointerProperty(windowProps, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr),
         (Window)SDL_GetNumberProperty(windowProps, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0) };
+#elif defined(__APPLE__)
+    s_renderWindow.window = SDL_GetPointerProperty(SDL_GetWindowProperties(s_pWindow), SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, nullptr);
+    s_renderWindow.view = SDL_Metal_GetLayer(SDL_Metal_CreateView(s_pWindow));
 #else
     static_assert(false, "Unknown platform.");
 #endif
