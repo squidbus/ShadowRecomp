@@ -289,7 +289,7 @@ struct PendingRenderCommands : LocalRenderCommandQueue
 	}
 };
 
-inline thread_local PendingRenderCommands g_pendingRenderCommands;
+extern thread_local PendingRenderCommands g_pendingRenderCommands;
 
 inline void SendRenderCommand(const RenderCommand& cmd)
 {
