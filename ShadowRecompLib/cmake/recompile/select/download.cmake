@@ -6,14 +6,14 @@ set(XBOXRECOMP2_REPOSITORY "Sewer56/XboxRecomp2")
 # Matches tools/XboxRecomp2/.github/workflows/rust.yml.
 set(XBOXRECOMP2_ASSETS
     linux-x64 linux-x86 linux-arm64 linux-armv7-hf
-    windows-x64 windows-x86
+    windows-x64 windows-x86 windows-arm64
     macos-x64 macos-arm64
 )
 
 # Downloads the XboxRecomp2 binary for this host.
 #
 # Arguments:
-# - version: release tag like `0.4.0`, or `latest`.
+# - version: release tag like `0.5.1`, or `latest`.
 # - destination: download folder. Each version gets a subfolder.
 # - out_executable: variable that receives the binary path.
 # - out_error: variable that receives why the download failed, or empty.

@@ -73,6 +73,43 @@
       }
     },
     {
+      "name": "arm64-Clang-Debug",
+      "displayName": "Debug",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "arm64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "VCPKG_TARGET_TRIPLET": {
+          "value": "arm64-windows-static",
+          "type": "STRING"
+        }
+      }
+    },
+    {
+      "name": "arm64-Clang-RelWithDebInfo-Aggressive",
+      "displayName": "RelWithDebInfo (Release Optimization)",
+      "inherits": "arm64-Clang-Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": true,
+        "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-O2 -g -DNDEBUG",
+        "CMAKE_C_FLAGS_RELWITHDEBINFO": "-O2 -g -DNDEBUG",
+        "CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO": "/DEBUG /OPT:ICF /OPT:REF /LTCG"
+      }
+    },
+    {
+      "name": "arm64-Clang-Release",
+      "displayName": "Release",
+      "inherits": "arm64-Clang-Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": true
+      }
+    },
+    {
       "name": "linux-base",
       "hidden": true,
       "generator": "Ninja",
@@ -86,10 +123,6 @@
         "CMAKE_TOOLCHAIN_FILE": {
           "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
-        },
-        "VCPKG_TARGET_TRIPLET": {
-          "value": "x64-linux",
-          "type": "STRING"
         },
         "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/toolchains/linux-clang.cmake"
       },

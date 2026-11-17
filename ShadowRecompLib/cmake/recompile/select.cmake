@@ -7,8 +7,8 @@ include("${CMAKE_CURRENT_LIST_DIR}/select/download.cmake")
 set(SHADOW_RECOMP_XBOXRECOMP2 "auto" CACHE STRING
     "XboxRecomp2 to use: `auto`, `source` (build tools/XboxRecomp2) or `binary` (download a release)")
 set_property(CACHE SHADOW_RECOMP_XBOXRECOMP2 PROPERTY STRINGS auto source binary)
-set(SHADOW_RECOMP_XBOXRECOMP2_VERSION "0.4.0" CACHE STRING
-    "XboxRecomp2 release to download in `binary` mode: a tag like `0.4.0`, or `latest`")
+set(SHADOW_RECOMP_XBOXRECOMP2_VERSION "0.5.1" CACHE STRING
+    "XboxRecomp2 release to download in `binary` mode: a tag like `0.5.1`, or `latest`")
 set(SHADOW_RECOMP_XBOXRECOMP2_EXECUTABLE "" CACHE FILEPATH
     "Existing XboxRecomp2 binary. Overrides SHADOW_RECOMP_XBOXRECOMP2 when set")
 

@@ -15,6 +15,7 @@ jobs:
       matrix:
         arch: [
           {"name": "x86_64", "runner": "ubuntu-26.04"},
+          {"name": "arm64", "runner": "ubuntu-26.04-arm"},
         ]
         preset: [
           "linux-release",

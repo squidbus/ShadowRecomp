@@ -15,7 +15,8 @@ jobs:
       matrix:
         arch: [
           {"name": "x86_64", "runner": "ubuntu-26.04"},
-          ]
+          {"name": "arm64", "runner": "ubuntu-26.04-arm"},
+        ]
     env:
       FLATPAK_ID: io.github.foxworkshop.shadowrecomp
 
@@ -62,7 +63,7 @@ jobs:
         run: cp ./private/* ./ShadowRecompLib/private
 
       - name: Download XboxRecomp2
-        run: cmake -DVERSION=0.4.0 -DDESTINATION=out/xr2-bin -P ShadowRecompLib/cmake/recompile/select/download.cmake
+        run: cmake -DVERSION=0.5.1 -DDESTINATION=out/xr2-bin -P ShadowRecompLib/cmake/recompile/select/download.cmake
 
       - name: Prepare Flatpak
         run: |
