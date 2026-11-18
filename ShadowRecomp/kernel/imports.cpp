@@ -259,17 +259,9 @@ void AvSetSavedDataAddress(IN  uint32_t* Address)
 	AvSavedDataAddress = Address;
 }
 
-uint32_t DbgPrintV(PCHAR Format, va_list args) {
-	vprintf(Format, args);
+uint32_t DbgPrint(PCHAR Format) {
+	printf("%s", Format);
 	return X_STATUS_SUCCESS;
-}
-
-uint32_t DbgPrint(PCHAR Format, ...) {
-	va_list args;
-	va_start(args, Format);
-	uint32_t result = DbgPrintV(Format, args);
-	va_end(args);
-	return result;
 }
 
 void ExFreePool(void* ptr)
@@ -1445,7 +1437,7 @@ GUEST_FUNCTION_HOOK_STDCALL(__imp__AvGetSavedDataAddress, AvGetSavedDataAddress)
 GUEST_FUNCTION_HOOK_STDCALL(__imp__AvSetSavedDataAddress, AvSetSavedDataAddress);
 GUEST_FUNCTION_HOOK_STDCALL(__imp__AvSetDisplayMode, AvSetDisplayMode);
 GUEST_FUNCTION_HOOK_STDCALL(__imp__AvSendTVEncoderOption, AvSendTVEncoderOption);
-GUEST_FUNCTION_HOOK(__imp__DbgPrint, DbgPrintV);
+GUEST_FUNCTION_HOOK(__imp__DbgPrint, DbgPrint);
 
 GUEST_FUNCTION_HOOK(sub_2ADB04, XGetLanguage);
 
