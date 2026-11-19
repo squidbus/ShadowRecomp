@@ -81,7 +81,7 @@ jobs:
 
       - name: Force VS Clang/LLVM (temp until MS fixes CI bs)
         run: |
-          $llvm = "$env:VCINSTALLDIR\Tools\Llvm\x64\bin"
+          $llvm = "$env:VCINSTALLDIR\Tools\Llvm\${{ matrix.arch.name }}\bin"
           "Path=$llvm;$env:Path" >> $env:GITHUB_ENV
           & "$llvm\clang-cl.exe" --version
 
