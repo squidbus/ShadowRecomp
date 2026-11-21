@@ -1,0 +1,106 @@
+name: build-macos
+on:
+  workflow_call:
+    secrets:
+      ASSET_REPO:
+        required: true
+      ASSET_REPO_TOKEN:
+        required: true
+
+jobs:
+  build-macos:
+    name: Build macOS (${{ matrix.arch.name }}, ${{ matrix.preset }})
+    runs-on: ${{ matrix.arch.runner }}
+    strategy:
+      matrix:
+        arch: [
+          {"name": "arm64", "runner": "macos-latest"},
+        ]
+        preset: [
+          "macos-release",
+          #"macos-relwithdebinfo"
+        ]
+    env:
+      CMAKE_PRESET: ${{ matrix.preset }}
+      VULKAN_SDK_VERSION: 1.4.363.1
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || '' }}
+          allow-unsafe-pr-checkout: true
+          token: ${{ secrets.ASSET_REPO_TOKEN }}
+
+      # HACK: Fine-grained token can't access cross-org repos.
+      # REMOVE when XboxRecomp2 & assets repo go public.
+      - name: Checkout Submodules
+        env:
+          TOKEN: ${{ secrets.ASSET_REPO_TOKEN }}
+        run: >-
+          git -c "url.https://x-access-token:${TOKEN}@github.com/.insteadOf=https://github.com/"
+          -c submodule.tools/XboxRecomp2.update=none
+          submodule update --init --recursive
+
+      - name: Fetch vcpkg baseline
+        run: git -C thirdparty/vcpkg fetch --depth=1 origin $(jq -r '."builtin-baseline"' vcpkg.json)
+
+      - name: Checkout Private Repository
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ secrets.ASSET_REPO }}
+          token: ${{ secrets.ASSET_REPO_TOKEN }}
+          path: ./private
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ runner.os }}-${{ matrix.arch.name }}-${{ matrix.preset }}
+
+      - name: Cache vcpkg
+        uses: actions/cache@v6
+        with:
+          path: |
+            ./thirdparty/vcpkg/downloads
+            ~/.cache/vcpkg/archives
+          key: vcpkg-${{ runner.os }}-${{ matrix.arch.name }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-${{ matrix.arch.name }}-
+
+      - name: Prepare Project
+        run: cp ./private/* ./ShadowRecompLib/private
+
+      - name: Configure Project
+        run: cmake . --preset ${{ env.CMAKE_PRESET }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache -DSHADOW_RECOMP_XBOXRECOMP2=binary
+
+      - name: Build Project
+        run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target ShadowRecomp
+
+      - name: Bundle Vulkan Driver
+        run: |
+          export CONTENTS_DIR="./out/build/${{ env.CMAKE_PRESET }}/ShadowRecomp/Shadow Recompiled.app/Contents"
+          export ICD_DIR="$CONTENTS_DIR/Resources/vulkan/icd.d"
+          export FRAMEWORKS_DIR="$CONTENTS_DIR/Frameworks"
+          export EXECUTABLE_PATH="$CONTENTS_DIR/MacOS/Shadow Recompiled"
+          mkdir -p "$ICD_DIR"
+          mkdir -p "$FRAMEWORKS_DIR"
+          wget https://sdk.lunarg.com/sdk/download/$VULKAN_SDK_VERSION/mac/vulkansdk-macos-$VULKAN_SDK_VERSION.zip
+          unzip vulkansdk-macos-$VULKAN_SDK_VERSION.zip
+          ./vulkansdk-macOS-$VULKAN_SDK_VERSION.app/Contents/MacOS/vulkansdk-macOS-$VULKAN_SDK_VERSION in --root $PWD/VulkanSDK --al -c
+          cp VulkanSDK/macOS/lib/libvulkan_kosmickrisp.dylib "$ICD_DIR"
+          sed 's/..\/.*\/libvulkan_kosmickrisp.dylib/.\/libvulkan_kosmickrisp.dylib/g' VulkanSDK/macOS/share/vulkan/icd.d/libkosmickrisp_icd.json > "$ICD_DIR/libkosmickrisp_icd.json"
+          cp VulkanSDK/macOS/lib/libvulkan.dylib "$FRAMEWORKS_DIR"
+          cp tools/XShaderRecomp/thirdparty/dxc-bin/lib/arm64/libdxcompiler.dylib "$FRAMEWORKS_DIR"
+          install_name_tool -add_rpath @executable_path/../Frameworks "$EXECUTABLE_PATH"
+
+      - name: Pack Release
+        run: |
+          codesign --deep -fs - "./out/build/${{ env.CMAKE_PRESET }}/ShadowRecomp/Shadow Recompiled.app"
+          tar -czf ./ShadowRecomp-macOS-${{ matrix.arch.name }}-${{ env.CMAKE_PRESET }}.tar.gz -C ./out/build/${{ env.CMAKE_PRESET }}/ShadowRecomp "Shadow Recompiled.app"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ShadowRecomp-macOS-${{ matrix.arch.name }}-${{ env.CMAKE_PRESET }}
+          path: ./ShadowRecomp-macOS-${{ matrix.arch.name }}-${{ env.CMAKE_PRESET }}.tar.gz
+          retention-days: 3
